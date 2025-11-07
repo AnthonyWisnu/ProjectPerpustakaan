@@ -28,6 +28,12 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'role' => 'member',
+            'member_number' => 'MBR' . fake()->unique()->numberBetween(10000, 99999),
+            'phone' => fake()->phoneNumber(),
+            'address' => fake()->address(),
+            'profile_photo' => null,
+            'status' => 'active',
             'remember_token' => Str::random(10),
         ];
     }
@@ -39,6 +45,39 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a super admin.
+     */
+    public function superAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'super_admin',
+            'member_number' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is an admin.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'admin',
+            'member_number' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a member.
+     */
+    public function member(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'member',
+            'member_number' => 'MBR' . fake()->unique()->numberBetween(10000, 99999),
         ]);
     }
 }
