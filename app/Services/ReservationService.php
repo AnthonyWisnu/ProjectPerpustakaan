@@ -92,9 +92,7 @@ class ReservationService
     /**
      * Auto-cancel expired reservations.
      */
-    public function autoCancel
-
-ExpiredReservations(): int
+    public function autoCancelExpiredReservations(): int
     {
         $expiredReservations = Reservation::expired()->get();
         $count = 0;
