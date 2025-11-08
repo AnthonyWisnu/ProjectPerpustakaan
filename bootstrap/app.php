@@ -12,8 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureAdmin::class,
-            'member' => \App\Http\Middleware\EnsureMember::class,
+            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'member' => \App\Http\Middleware\EnsureUserIsMember::class,
+            'member.active' => \App\Http\Middleware\EnsureMemberIsActive::class,
+            'check.reservation.limit' => \App\Http\Middleware\CheckReservationLimit::class,
+            'check.unpaid.fines' => \App\Http\Middleware\CheckUnpaidFines::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
