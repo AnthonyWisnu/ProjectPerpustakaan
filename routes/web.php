@@ -48,8 +48,36 @@ Route::middleware('auth')->group(function () {
 
     // Admin routes
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
+        // Books Management
+        Route::resource('books', \App\Http\Controllers\Admin\BookController::class);
+        Route::post('/books/{id}/restore', [\App\Http\Controllers\Admin\BookController::class, 'restore'])->name('books.restore');
+
+        // Categories Management
+        Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->except(['show']);
+
+        // Users Management
+        Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+        Route::get('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
+        Route::post('/users/{id}/status', [\App\Http\Controllers\Admin\UserController::class, 'updateStatus'])->name('users.updateStatus');
+        Route::post('/users/{id}/role', [\App\Http\Controllers\Admin\UserController::class, 'updateRole'])->name('users.updateRole');
+        Route::post('/users/{id}/reset-password', [\App\Http\Controllers\Admin\UserController::class, 'resetPassword'])->name('users.resetPassword');
+
+        // Reservations Management
+        Route::get('/reservations', [\App\Http\Controllers\Admin\ReservationController::class, 'index'])->name('reservations.index');
+        Route::get('/reservations/{id}', [\App\Http\Controllers\Admin\ReservationController::class, 'show'])->name('reservations.show');
+        Route::post('/reservations/{id}/mark-ready', [\App\Http\Controllers\Admin\ReservationController::class, 'markReady'])->name('reservations.markReady');
+        Route::post('/reservations/{id}/process-pickup', [\App\Http\Controllers\Admin\ReservationController::class, 'processPickup'])->name('reservations.processPickup');
+        Route::post('/reservations/{id}/cancel', [\App\Http\Controllers\Admin\ReservationController::class, 'cancel'])->name('reservations.cancel');
+        Route::post('/reservations/auto-cancel-expired', [\App\Http\Controllers\Admin\ReservationController::class, 'autoCancelExpired'])->name('reservations.autoCancelExpired');
+
+        // Loans Management
+        Route::get('/loans', [\App\Http\Controllers\Admin\LoanController::class, 'index'])->name('loans.index');
+        Route::get('/loans/{id}', [\App\Http\Controllers\Admin\LoanController::class, 'show'])->name('loans.show');
+        Route::post('/loans/{id}/return', [\App\Http\Controllers\Admin\LoanController::class, 'processReturn'])->name('loans.processReturn');
+        Route::post('/loans/{id}/pay-fine', [\App\Http\Controllers\Admin\LoanController::class, 'payFine'])->name('loans.payFine');
+        Route::post('/loans/{id}/waive-fine', [\App\Http\Controllers\Admin\LoanController::class, 'waiveFine'])->name('loans.waiveFine');
+        Route::post('/loans/{id}/extend', [\App\Http\Controllers\Admin\LoanController::class, 'extend'])->name('loans.extend');
     });
 });
