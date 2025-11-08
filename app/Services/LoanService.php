@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\SendLoanCreatedEmail;
 use App\Models\Book;
 use App\Models\Loan;
 use App\Models\Reservation;
@@ -44,6 +45,11 @@ class LoanService
                 'status' => 'picked_up',
                 'picked_up_at' => now(),
             ]);
+
+            // Dispatch email notifications for each loan
+            foreach ($loans as $loan) {
+                SendLoanCreatedEmail::dispatch($loan->fresh(['user', 'book']));
+            }
 
             return $loans;
         });

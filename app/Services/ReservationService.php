@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Jobs\SendReservationConfirmationEmail;
+use App\Jobs\SendReservationReadyEmail;
 use App\Models\Book;
 use App\Models\Reservation;
 use App\Models\ReservationItem;
@@ -56,6 +58,9 @@ class ReservationService
             // Clear cart
             $this->cartService->clearCart($user);
 
+            // Dispatch email notification
+            SendReservationConfirmationEmail::dispatch($reservation->fresh(['user', 'items.book']));
+
             return $reservation;
         });
     }
@@ -86,7 +91,14 @@ class ReservationService
      */
     public function markAsReady(Reservation $reservation): bool
     {
-        return $reservation->update(['status' => 'ready']);
+        $updated = $reservation->update(['status' => 'ready']);
+
+        if ($updated) {
+            // Dispatch email notification
+            SendReservationReadyEmail::dispatch($reservation->fresh(['user', 'items.book']));
+        }
+
+        return $updated;
     }
 
     /**

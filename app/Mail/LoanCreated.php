@@ -2,14 +2,14 @@
 
 namespace App\Mail;
 
-use App\Models\Reservation;
+use App\Models\Loan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ReservationReady extends Mailable
+class LoanCreated extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -17,7 +17,7 @@ class ReservationReady extends Mailable
      * Create a new message instance.
      */
     public function __construct(
-        public Reservation $reservation
+        public Loan $loan
     ) {}
 
     /**
@@ -26,7 +26,7 @@ class ReservationReady extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your Books Are Ready for Pickup - ' . $this->reservation->reservation_code,
+            subject: 'Book Loan Confirmation - ' . $this->loan->loan_code,
         );
     }
 
@@ -36,7 +36,7 @@ class ReservationReady extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.reservations.ready',
+            view: 'emails.loans.created',
         );
     }
 

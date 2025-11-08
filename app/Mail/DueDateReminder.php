@@ -2,14 +2,14 @@
 
 namespace App\Mail;
 
-use App\Models\Reservation;
+use App\Models\Loan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ReservationReady extends Mailable
+class DueDateReminder extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -17,7 +17,8 @@ class ReservationReady extends Mailable
      * Create a new message instance.
      */
     public function __construct(
-        public Reservation $reservation
+        public Loan $loan,
+        public int $daysUntilDue
     ) {}
 
     /**
@@ -25,8 +26,12 @@ class ReservationReady extends Mailable
      */
     public function envelope(): Envelope
     {
+        $subject = $this->daysUntilDue === 1
+            ? 'Book Due Tomorrow - ' . $this->loan->loan_code
+            : 'Book Due in ' . $this->daysUntilDue . ' Days - ' . $this->loan->loan_code;
+
         return new Envelope(
-            subject: 'Your Books Are Ready for Pickup - ' . $this->reservation->reservation_code,
+            subject: $subject,
         );
     }
 
@@ -36,7 +41,7 @@ class ReservationReady extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.reservations.ready',
+            view: 'emails.loans.due-reminder',
         );
     }
 
